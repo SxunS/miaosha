@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+/**
+ * @author s_xun
+ */
 @Service
 public class RedisService {
-    @Autowired
-    private RedisConfig redisConfig;
 
     @Autowired
     private JedisPool jedisPool;
@@ -160,7 +161,7 @@ public class RedisService {
         }else if (clazz == String.class){
             return (T) str;
         }else {
-            return JSON.toJavaObject((JSON) JSON.parseObject(str,clazz),clazz);
+            return JSON.toJavaObject(JSON.parseObject(str),clazz);
         }
     }
 

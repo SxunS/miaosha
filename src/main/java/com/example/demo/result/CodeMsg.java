@@ -1,18 +1,21 @@
 package com.example.demo.result;
 
-public class CodeMsg {
+public enum CodeMsg {
+    //通用错误码
+    SUCCESS(200,"SUCCESS"),
+    SERVER_ERROR(500100,"服务端异常"),
+    BIND_ERROR(500101,"参数校验异常：");
+
+    //登录模块 5002xx
+
+
+    //商品模块5003xx
     private int code;
-    private String msg;
+    private String message;
 
-    /**
-     * 共用异常
-     */
-    public static CodeMsg SERVER_ERROR = new CodeMsg(500100,"服务端异常");
-
-
-    public CodeMsg(int code, String msg) {
+    CodeMsg(int code, String message) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
     }
 
     public int getCode() {
@@ -23,11 +26,16 @@ public class CodeMsg {
         this.code = code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public CodeMsg filterMsg(String message){
+        this.message += message;
+        return this;
     }
 }

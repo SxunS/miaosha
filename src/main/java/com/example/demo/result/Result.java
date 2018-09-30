@@ -16,7 +16,7 @@ public class Result<T> {
             return;
         }
     this.code = codeMsg.getCode();
-    this.msg = codeMsg.getMsg();
+    this.msg = codeMsg.getMessage();
     }
 
     /**
@@ -32,8 +32,8 @@ public class Result<T> {
     /**
      *失败结果
      */
-    public static Result error(CodeMsg codeMsg){
-        return new Result<>(codeMsg);
+    public static <T> Result<T> error(CodeMsg codeMsg){
+        return new Result<T>(codeMsg);
     }
 
     public Result(int code, String msg, T data) {
