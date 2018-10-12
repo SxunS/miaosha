@@ -1,7 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.constant.CookieConstant;
-import com.example.demo.domain.User;
+import com.example.demo.entity.MiaoshaUser;
 import com.example.demo.service.UserService;
 import com.example.demo.util.CookieUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +13,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 @Component
 public class UserMethodArgumentResolver implements HandlerMethodArgumentResolver {
@@ -22,7 +21,7 @@ public class UserMethodArgumentResolver implements HandlerMethodArgumentResolver
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
         Class<?> aClass = methodParameter.getParameterType();
-        return User.class == aClass;
+        return MiaoshaUser.class == aClass;
     }
 
     @Override

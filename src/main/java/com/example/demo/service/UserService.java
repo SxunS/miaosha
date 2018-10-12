@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.constant.CookieConstant;
-import com.example.demo.dao.UserMapper;
-import com.example.demo.domain.User;
+import com.example.demo.entity.MiaoshaUser;
+import com.example.demo.exception.GlobalException;
+import com.example.demo.mapper.MiaoshaUserMapper;
 import com.example.demo.redis.UserPrefix;
+import com.example.demo.result.CodeMsg;
 import com.example.demo.util.MD5Util;
 import com.example.demo.util.UUIDUtil;
 import com.example.demo.vo.LoginVo;
@@ -19,16 +21,16 @@ public class UserService {
     private RedisService redisService;
 
     @Autowired
-    private UserMapper userMapper;
+    private MiaoshaUserMapper userMapper;
 
-    private User getUserById(Long id){
+    private MiaoshaUser getUserById(Long id){
         //取缓存
-        User user = redisService.get(UserPrefix.getById, id.toString(), User.class);
+        MiaoshaUser user = redisService.get(UserPrefix.getById, id.toString(), MiaoshaUser.class);
         if (user != null) {
             return user;
         }
         //取数据库
-        user = userMapper.selectByPrimaryKey(id);
+        user = userMapper.selectById(id);
         if (user != null) {
             redisService.set(UserPrefix.getById,id.toString(),user);
         }
@@ -42,14 +44,14 @@ public class UserService {
         String mobile = loginVo.getMobile();
         String password = loginVo.getPassword();
         //判断手机号码是否存在
-        User user = getUserById(Long.parseLong(mobile));
+        MiaoshaUser user = getUserById(Long.parseLong(mobile));
         if (user == null) {
-            throw new RuntimeException("手机号码不存在");
+            throw new GlobalException(CodeMsg.PHONE_NUM_NOT_EXIST_ERROR);
         }
         //校验密码是否正确
         String dBpass = MD5Util.formpassToDBpass(password, user.getSalt());
         if (!dBpass.equals(user.getPassword())) {
-            throw new RuntimeException("密码错误");
+            throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
         //密码校验成功，加入写入cookie 写入redis
         String token = UUIDUtil.uuid();
@@ -57,7 +59,7 @@ public class UserService {
         return token;
     }
 
-    private void addCookie(HttpServletResponse response, String token, User user) {
+    private void addCookie(HttpServletResponse response, String token, MiaoshaUser user) {
         redisService.set(UserPrefix.token,token,user);
         Cookie cookie = new Cookie(CookieConstant.USER_TOKEN, token);
         cookie.setPath("/");
@@ -65,10 +67,10 @@ public class UserService {
         response.addCookie(cookie);
     }
 
-    public User getUserFromToken(String token) {
+    public MiaoshaUser getUserFromToken(String token) {
         if (StringUtils.isBlank(token)) {
             return null;
         }
-        return redisService.get(UserPrefix.token,token,User.class);
+        return redisService.get(UserPrefix.token,token,MiaoshaUser.class);
     }
 }
